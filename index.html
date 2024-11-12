@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Ujian Online SMK PP N PADANG MENGATAS</title>
+    <style>
+        /* CSS untuk styling antarmuka */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('background-peternakan.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-family: 'Pacifico', cursive;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            margin-top: 0;
+            font-style: italic;
+            color: #FFD700;
+        }
+
+        .input-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: none;
+            width: 250px;
+            margin-bottom: 10px;
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .btn {
+            background-color: #28a745;
+            color: #fff;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.5em;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #218838;
+        }
+
+        .credits {
+            position: absolute;
+            bottom: 20px;
+            font-size: 1em;
+            color: #ddd;
+        }
+
+        iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+            margin-top: 20px;
+            display: none; /* Tampilkan setelah tombol Mulai Ujian diklik */
+        }
+
+        .message {
+            display: none;
+            font-size: 5em;
+            color: red;
+            font-family: 'Impact', sans-serif;
+            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 50px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Aplikasi Ujian Online</h1>
+        <h2>SMK PP N PADANG MENGATAS</h2>
+        <p>Selamat datang di aplikasi ujian online resmi.</p>
+        
+        <!-- Formulir untuk input data No Ujian, Nama, dan Kelas -->
+        <div class="input-container">
+            <input type="text" id="noUjian" placeholder="No Ujian" required>
+            <input type="text" id="nama" placeholder="Nama" required>
+            <input type="text" id="kelas" placeholder="Kelas" required>
+        </div>
+
+        <div class="button-container">
+            <button class="btn" onclick="mulaiUjian()">Mulai Ujian</button>
+        </div>
+        <div class="credits">
+            <p>Created by: Irsan Kurniawan, S.Pt</p>
+        </div>
+    </div>
+
+    <!-- Iframe untuk ujian -->
+    <iframe id="ujianIframe" src="https://docs.google.com/forms/d/e/1FAIpQLSfe-3d4bTapsjpmsStpxdh3-HzgXUMgM0ro5qjnS_nTLQ6d0g/viewform?vc=0&c=0&w=1&flr=0&pli=1"></iframe>
+
+    <!-- Pesan curang -->
+    <div class="message" id="message"></div>
+
+    <script>
+        let ujianDimulai = false;  // Variabel untuk menandai ujian telah dimulai
+        let intervalID;
+
+        function mulaiUjian() {
+            const noUjian = document.getElementById("noUjian").value;
+            const nama = document.getElementById("nama").value;
+            const kelas = document.getElementById("kelas").value;
+
+            if (!noUjian || !nama || !kelas) {
+                alert("Harap lengkapi semua data.");
+                return;
+            }
+
+            const container = document.querySelector(".container");
+            const iframe = document.getElementById("ujianIframe");
+
+            // Sembunyikan konten awal dan tampilkan iframe ujian
+            container.style.display = "none";
+            iframe.style.display = "block";
+            ujianDimulai = true; // Tandai ujian telah dimulai
+
+            // Mencegah copy-paste
+            document.addEventListener('copy', (e) => e.preventDefault());
+            document.addEventListener('paste', (e) => e.preventDefault());
+
+            // Set interval untuk memeriksa apakah tab aktif
+            intervalID = setInterval(checkTabFocus, 1000);
+        }
+
+        function checkTabFocus() {
+            // Jika ujian telah dimulai dan tab tidak aktif, lakukan logout
+            if (ujianDimulai && document.hidden) {
+                alert("Anda keluar dari halaman ujian. Anda akan otomatis logout.");
+                logout();
+            }
+
+            // Simulasi curang: jika tab berubah atau aplikasi mengalihkan fokus
+            if (ujianDimulai && !document.hidden && Math.random() < 0.1) {
+                curang();
+            }
+        }
+
+        function curang() {
+            // Menampilkan pesan curang dengan kalimat acak
+            const messages = [
+                "ANDA CURANG! Jangan coba-coba lagi!",
+                "ANDA GAGAL! Kecurangan tidak akan membuahkan hasil!",
+                "CURANG! Ujian tidak berlaku bagi orang sepertimu!",
+                "GAGAL! Belajarlah dengan jujur!",
+                "ANDA MENYESAL MELAKUKAN INI!"
+            ];
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+
+            const messageElement = document.getElementById("message");
+            messageElement.textContent = randomMessage;
+            messageElement.style.display = "block";
+            setTimeout(() => {
+                messageElement.style.display = "none";
+                logout();
+            }, 3000);
+        }
+
+        // Fungsi logout otomatis
+        function logout() {
+            ujianDimulai = false; // Reset status ujian
+            document.getElementById("ujianIframe").style.display = "none"; // Sembunyikan ujian
+            clearInterval(intervalID); // Hentikan interval
+            window.location.reload(); // Reload halaman (untuk reset)
+        }
+    </script>
+</body>
+</html>
